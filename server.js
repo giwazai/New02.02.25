@@ -7,6 +7,7 @@ const { buffer } = require('stream/consumers')
 const dataPath = path.join(__dirname, 'data')
 
 const server = http.createServer((req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', "*")
     if (req.url == '/jokes' && req.method == 'GET') {
         getAllJokes(req, res)
     }
@@ -65,11 +66,14 @@ function like(req, res){
         let joke = JSON.parse(jokeJSON)
         joke.likes++;
         fs.writeFileSync(filePath, JSON.stringify(joke))
+        joke.id = id
+        return res.end(JSON.stringify(joke))
     }
-    res.end()
+    res.statusCode = '400'
+    return res.end("Bad request")
 }
 
-function dislikes(req, res){
+function Dislikes(req, res){
     const url = require('url')
     const params = url.parse(req.url, true).query;
     let id = params.id
